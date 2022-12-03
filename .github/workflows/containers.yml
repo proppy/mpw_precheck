@@ -58,5 +58,7 @@ jobs:
           make -C caravel_user_project precheck
           # override precheck image
           docker tag ghcr.io/proppy/mpw_precheck:main efabless/mpw_precheck:latest
-          # run 
-          make -C caravel_user_project run-precheck
+          # define user i/o
+          sed -E -i -e 's/_INIT\s+`GPIO_MODE_INVALID/_INIT `GPIO_MODE_USER_STD_INPUT_PULLDOWN/' caravel_user_project/verilog/rtl/user_defines.v
+          # run
+          make -C caravel_user_project run-precheck || true
