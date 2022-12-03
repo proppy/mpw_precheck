@@ -43,3 +43,20 @@ jobs:
           push: ${{ github.ref_name == 'main' }}
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
+
+      - name: Test with caravel_user_project
+        run: |
+          # setup caravel_user_project
+          mkdir openlane_root
+          mkdir pdk_root
+          mkdir precheck_root
+          export PDK_ROOT=$(readlink -f pdk_root)
+          export OPENLANE_ROOT=$(readlink -f openlane_root)
+          export PRECHECK_ROOT=$(readlink -f precheck_root)
+          git clone -b gf180mcu https://github.com/efabless/caravel_user_project
+          make -C caravel_user_project setup
+          make -C caravel_user_project precheck
+          # override precheck image
+          docker tag ghcr.io/proppy/mpw_precheck:main efabless/mpw_precheck:latest
+          # run 
+          make -C caravel_user_project run-precheck
